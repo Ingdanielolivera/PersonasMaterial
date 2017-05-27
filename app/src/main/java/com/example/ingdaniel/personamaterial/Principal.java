@@ -51,6 +51,14 @@ public class Principal extends AppCompatActivity implements AdaptadorPersona.OnP
 
     @Override
     public void OnPersonaClick(Persona p) {
+        //finish();
+        Intent i = new Intent(Principal.this,DetallePersona.class);
+        Bundle b = new Bundle();
+        b.putString("nombre",p.getNombre());
+        b.putString("apellido",p.getApellido());
+        b.putString("urlfoto",p.getUrlfoto());
 
+        i.putExtra("datos",b);
+        startActivity(i);
     }
 }
