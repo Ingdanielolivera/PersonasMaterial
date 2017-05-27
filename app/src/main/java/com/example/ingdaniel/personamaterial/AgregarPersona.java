@@ -12,11 +12,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import org.w3c.dom.Text;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class AgregarPersona extends AppCompatActivity {
     private EditText cajaCedula;
@@ -98,7 +102,7 @@ public class AgregarPersona extends AppCompatActivity {
     }
 
 
-    public void guardar(View v) {
+    public void guardar(View v) throws IOException {
         String urlfoto, cedula, nombre, apellido,idfoto;
         Persona p;
         if (validartodo()) {
@@ -108,7 +112,14 @@ public class AgregarPersona extends AppCompatActivity {
             nombre = cajaNombre.getText().toString();
             apellido = cajaApellido.getText().toString();
             idfoto=String.valueOf(fotoAleatoria());
+
             Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(),Integer.parseInt(idfoto));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
+            byte[]imagenBytes = baos.toByteArray();
+            urlfoto= Base64.encodeToString(imagenBytes,Base64.DEFAULT);
+
+            baos.close();
 
             p = new Persona(urlfoto, cedula, nombre, apellido,idfoto);
             p.guardar(getApplicationContext());

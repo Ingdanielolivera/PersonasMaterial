@@ -195,7 +195,7 @@ public class Persona {
                     JSONObject jsonObject = new JSONObject(s);
                     boolean success = jsonObject.getBoolean("success");
                     if(success){
-                        urlfoto = jsonObject.getString("urlfoto");
+                        urlfoto = jsonObject.getString("foto");
                         guardarLocal(contexto);
 
                     }
