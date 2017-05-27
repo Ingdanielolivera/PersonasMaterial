@@ -1,6 +1,5 @@
 package com.example.ingdaniel.personamaterial;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -105,24 +104,34 @@ public class Persona {
     }
 
 
+    public  void guardar(Context contexto){
+        guardarRemoto(contexto);
+    }
     public void guardarRemoto(final Context contexto){
-        new AsyncTask<Void, Void, String>() {
+        new AsyncTask<Void, Void, String>(){
+
             @Override
             protected String doInBackground(Void... params) {
                 HttpURLConnection conexion = null;
+
                 try {
                     URL url = new URL("http://54.237.241.125/guardar.php");
+                    conexion =(HttpURLConnection)url.openConnection();
                     conexion.setConnectTimeout(30000);
                     conexion.setReadTimeout(30000);
-                    //Configuración envio de datos via POST
+
+                    //Configuracion de envío de datos via POST
                     conexion.setRequestMethod("POST");
                     conexion.setDoOutput(true);
                     conexion.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-                    //crear consulta con los datos
+
+                    //Crear consulta con los datos
+
                     StringBuilder builder = new StringBuilder();
                     builder.append("id");
                     builder.append("=");
                     builder.append(URLEncoder.encode(uuid,"UTF-8"));
+                    builder.append("&");
                     builder.append("foto");
                     builder.append("=");
                     builder.append(URLEncoder.encode(urlfoto,"UTF-8"));
@@ -143,7 +152,7 @@ public class Persona {
                     builder.append("=");
                     builder.append(URLEncoder.encode(idfoto,"UTF-8"));
 
-                    String query =builder.toString();
+                    String query = builder.toString();
 
                     conexion.setFixedLengthStreamingMode(query.getBytes("UTF-8").length);
 
@@ -151,29 +160,29 @@ public class Persona {
                     OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream,"UTF-8");
                     BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
                     bufferedWriter.write(query);
-                    //envia informacion escrita
                     bufferedWriter.flush();
-                    //cierra
                     bufferedWriter.close();
 
-                    //conectar
+                    //Conectar
                     conexion.connect();
 
-                    //leer respuesta del servidor
+                    //Leer Respuesta del servidor
+
                     InputStream inputStream = conexion.getInputStream();
                     InputStreamReader inputStreamReader = new InputStreamReader(inputStream,"UTF-8");
-                    BufferedReader bufferedReader=new BufferedReader(inputStreamReader);
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                     StringBuilder datos = new StringBuilder();
                     String linea;
-                    while ((linea=bufferedReader.readLine())!=null){
+                    while((linea =bufferedReader.readLine())!=null){
                         datos.append(linea);
                     }
+
                     bufferedReader.close();
                     return datos.toString();
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 return null;
@@ -184,28 +193,27 @@ public class Persona {
                 super.onPostExecute(s);
                 try {
                     JSONObject jsonObject = new JSONObject(s);
-                    boolean success =jsonObject.getBoolean("success");
-                    if (success){
-                        urlfoto=jsonObject.getString("urlfoto");
+                    boolean success = jsonObject.getBoolean("success");
+                    if(success){
+                        urlfoto = jsonObject.getString("urlfoto");
                         guardarLocal(contexto);
 
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         }.execute();
     }
 
 
-    public void guardarLocal (Context contexto){
+    public void guardarLocal(Context contexto){
         //declarar las variables
         SQLiteDatabase db;
         String sql;
 
-        //Abrir la conexión de base de datos en modo escritura
-        PersonaSQLiteOpenHelper aux =new PersonaSQLiteOpenHelper(contexto,"DBPersonas",null);
+        //Abrir la conexion de base datos en modo escritura
+        PersonaSQLiteOpenHelper aux = new PersonaSQLiteOpenHelper(contexto,"DBPersonas",null);
         db = aux.getWritableDatabase();
 
         //insertar forma 1
@@ -218,19 +226,21 @@ public class Persona {
                 +this.getIdfoto()+"')";
 
         db.execSQL(sql);
-/*
-        //insertar forma 2
-        ContentValues nuevoRegistro = new ContentValues();
-        nuevoRegistro.put("uuid",this.getUuid());
-        nuevoRegistro.put("urlfoto",this.getUrlfoto());
+
+        //insert forma 2
+
+      /*  ContentValues nuevoRegistro = new ContentValues();
+        nuevoRegistro.put("foto",this.getFoto());
         nuevoRegistro.put("cedula",this.getCedula());
         nuevoRegistro.put("nombre",this.getNombre());
         nuevoRegistro.put("apellido",this.getApellido());
-        nuevoRegistro.put("idfoto",this.getIdfoto());
-        //Inserto en la base de datos
-        db.insert("Personas",null, nuevoRegistro);
-        //cierro la conexión*/
+        nuevoRegistro.put("sexo",this.getSexo());
+        nuevoRegistro.put("pasatiempo",this.getPasatiempo());
+        db.insert("Personas",null,nuevoRegistro);
+*/
+        //cerrar conexion
         db.close();
+
     }
 
     public void eliminar(Context contexto){

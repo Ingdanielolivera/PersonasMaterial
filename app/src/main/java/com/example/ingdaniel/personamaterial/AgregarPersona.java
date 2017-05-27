@@ -2,6 +2,8 @@ package com.example.ingdaniel.personamaterial;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -97,15 +99,18 @@ public class AgregarPersona extends AppCompatActivity {
 
 
     public void guardar(View v) {
-        String foto, cedula, nombre, apellido;
+        String urlfoto, cedula, nombre, apellido,idfoto;
         Persona p;
         if (validartodo()) {
+
             cedula = cajaCedula.getText().toString();
-            foto = String.valueOf(fotoAleatoria());
+
             nombre = cajaNombre.getText().toString();
             apellido = cajaApellido.getText().toString();
+            idfoto=String.valueOf(fotoAleatoria());
+            Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(),Integer.parseInt(idfoto));
 
-            p = new Persona(foto, cedula, nombre, apellido);
+            p = new Persona(urlfoto, cedula, nombre, apellido,idfoto);
             p.guardar(getApplicationContext());
 
             //Ocultar teclado
